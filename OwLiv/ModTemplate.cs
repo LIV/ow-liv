@@ -1,30 +1,60 @@
-﻿using OWML.Common;
+﻿using System.IO;
+using LIV.SDK.Unity;
+using OWML.Common;
 using OWML.ModHelper;
+using UnityEngine;
 
 namespace OwLiv
 {
     public class ModTemplate : ModBehaviour
     {
-        private void Awake()
-        {
-            // You won't be able to access OWML's mod helper in Awake.
-            // So you probably don't want to do anything here.
-            // Use Start() instead.
-        }
-
+        private LIV.SDK.Unity.LIV liv;
+        private AssetBundle shaderBundle;
+        
         private void Start()
         {
-            // Starting here, you'll have access to OWML's mod helper.
-            ModHelper.Console.WriteLine($"My mod {nameof(ModTemplate)} is loaded!", MessageType.Success);
-
-            // Example of accessing game code.
-            LoadManager.OnCompleteSceneLoad += (scene, loadScene) =>
+            shaderBundle = LoadBundle("liv-shaders");
+            SDKShaders.LoadFromAssetBundle(shaderBundle);
+        }
+        
+        private void Update()
+        {
+            if (OWInput.IsNewlyPressed(InputLibrary.map))
             {
-                if (loadScene != OWScene.SolarSystem) return;
-                var playerBody = FindObjectOfType<PlayerBody>();
-                ModHelper.Console.WriteLine($"Found player body, and it's called {playerBody.name}!",
-                    MessageType.Success);
-            };
+                SetUpLiv();
+            }
+        }
+
+        private void SetUpLiv()
+        {
+            ModHelper.Console.WriteLine($"Setting up LIV...");
+            
+            if (liv)
+            {
+                ModHelper.Console.WriteLine($"LIV instance already exists. Destroying it.");
+                Destroy(liv);
+            }
+            
+            var camera = Locator.GetActiveCamera()._mainCamera;
+            var cameraParent = camera.transform.parent;
+
+            liv = cameraParent.gameObject.AddComponent<LIV.SDK.Unity.LIV>();
+            liv.stage = cameraParent;
+            liv.HMDCamera = camera;
+
+            ModHelper.Console.WriteLine($"LIV created successfully");
+        }
+        
+        private AssetBundle LoadBundle(string assetName)
+        {
+            var bundle = AssetBundle.LoadFromFile($"{ModHelper.Manifest.ModFolderPath}/Assets/{assetName}");
+
+            if (bundle == null)
+            {
+                ModHelper.Console.WriteLine($"Failed to load AssetBundle {assetName}", MessageType.Error);
+            }
+
+            return bundle;
         }
     }
 }

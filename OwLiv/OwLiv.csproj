@@ -22,11 +22,22 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\OwLivUnity\AssetBundles\StandaloneWindows\liv-shaders">
+      <Link>Assets\liv-shaders</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\OwLivUnity\AssetBundles\StandaloneWindows\liv-shaders.manifest">
+      <Link>Assets\liv-shaders.manifest</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\OwLivUnity\Build\OwLivUnity_Data\Plugins\x86_64\LIV_Bridge.dll">
       <Link>LIV_Bridge.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="OwLiv.csproj.user" />
+      <Content Include="Assets\**">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="LIV, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
