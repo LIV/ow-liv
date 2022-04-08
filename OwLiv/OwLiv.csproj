@@ -2,13 +2,11 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <LangVersion>default</LangVersion>
-    <Copyright>Copyright © 2020</Copyright>
+    <Copyright>Copyright © 2022</Copyright>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugType>none</DebugType>
   </PropertyGroup>
   <ItemGroup>
@@ -24,6 +22,15 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ModTemplate.csproj.user" />
+    <Content Include="..\OwLivUnity\Build\OwLivUnity_Data\Plugins\x86_64\LIV_Bridge.dll">
+      <Link>LIV_Bridge.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OwLiv.csproj.user" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="LIV, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\OwLivUnity\Build\OwLivUnity_Data\Managed\LIV.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
