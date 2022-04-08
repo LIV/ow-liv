@@ -41,6 +41,7 @@ namespace OwLiv
             liv = cameraParent.gameObject.AddComponent<LIV.SDK.Unity.LIV>();
             liv.stage = cameraParent;
             liv.HMDCamera = camera;
+            liv.fixPostEffectsAlpha = true;
 
             ModHelper.Console.WriteLine($"LIV created successfully");
         }
