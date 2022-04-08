@@ -1,7 +1,7 @@
 ﻿using OWML.Common;
 using OWML.ModHelper;
 
-namespace ModTemplate
+namespace OwLiv
 {
     public class ModTemplate : ModBehaviour
     {
