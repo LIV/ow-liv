@@ -6,7 +6,7 @@ namespace LIV.SDK.Unity
 {
     public struct SDKConstants
     {
-        public const string SDK_ID = "##############################";
+        public const string SDK_ID = "PD8UJJNDBCPB7DUENSUONWXTOJNXJAO6";
         public const string SDK_VERSION = "1.5.4";
         public const string ENGINE_NAME = "unity";
     }
