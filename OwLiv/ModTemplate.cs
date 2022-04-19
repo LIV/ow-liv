@@ -3,6 +3,7 @@ using LIV.SDK.Unity;
 using OWML.Common;
 using OWML.ModHelper;
 using UnityEngine;
+using Valve.VR;
 
 namespace OwLiv
 {
@@ -35,15 +36,21 @@ namespace OwLiv
                 Destroy(liv);
             }
             
-            var camera = Locator.GetActiveCamera()._mainCamera;
+            var camera = Locator.GetPlayerCamera()._mainCamera;
             var cameraParent = camera.transform.parent;
 
+            var steamVrPose = cameraParent.GetComponentInChildren<SteamVR_Behaviour_Pose>();
+            
+            var stage = steamVrPose ? steamVrPose.transform.parent : cameraParent;
+
             liv = cameraParent.gameObject.AddComponent<LIV.SDK.Unity.LIV>();
-            liv.stage = cameraParent;
+            liv.stage = stage;
             liv.HMDCamera = camera;
             liv.fixPostEffectsAlpha = true;
+            liv.spectatorLayerMask = camera.cullingMask;
+            liv.spectatorLayerMask &= ~(1 << LayerMask.NameToLayer("UI"));
 
-            ModHelper.Console.WriteLine($"LIV created successfully");
+            ModHelper.Console.WriteLine($"LIV created successfully with stage {stage}");
         }
         
         private AssetBundle LoadBundle(string assetName)

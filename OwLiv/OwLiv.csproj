@@ -43,5 +43,9 @@
     <Reference Include="LIV, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\OwLivUnity\Build\OwLivUnity_Data\Managed\LIV.dll</HintPath>
     </Reference>
+    <Reference Include="SteamVR, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\AppData\Roaming\OuterWildsModManager\OWML\Mods\Raicuparta.NomaiVR\SteamVR.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
 </Project>
