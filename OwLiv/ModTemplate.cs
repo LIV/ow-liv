@@ -28,7 +28,15 @@ namespace OwLiv
         private void OnSwitchActiveCamera(OWCamera activeCamera)
         {
             ModHelper.Console.WriteLine($"Switch active camera to ${activeCamera}");
-            SetUpLiv(activeCamera.mainCamera);
+
+            if (activeCamera.GetComponent<NomaiRemoteCamera>())
+            {
+                SetUpLivRemotNomaiCamera(activeCamera.mainCamera);
+            }
+            else
+            {
+                SetUpLiv(activeCamera.mainCamera);
+            }
         }
 
         private void Update()
@@ -57,6 +65,38 @@ namespace OwLiv
             }
         }
 
+        private void SetUpLivRemotNomaiCamera(Camera camera)
+        {
+            ModHelper.Console.WriteLine($"Setting up LIV with Remote NomaiCamera camera {camera.name}");
+            
+            if (liv)
+            {
+                ModHelper.Console.WriteLine($"LIV instance already exists. Destroying it.");
+                Destroy(liv);
+            }
+            
+            var cameraParent = camera.transform.parent.parent;
+
+            var steamVrPose = cameraParent.GetComponentInChildren<SteamVR_Behaviour_Pose>();
+            
+            var stage = steamVrPose ? steamVrPose.transform.parent : cameraParent;
+
+            var livCameraPrefabParent = new GameObject("LIVCameraPrefabParent").transform;
+            var livCameraPrefab = new GameObject("LivCameraPrefab").AddComponent<Camera>();
+            livCameraPrefab.transform.SetParent(livCameraPrefabParent, false);
+            livCameraPrefabParent.gameObject.SetActive(false);
+
+            liv = cameraParent.gameObject.AddComponent<LIV.SDK.Unity.LIV>();
+            liv.stage = stage;
+            liv.MRCameraPrefab = livCameraPrefab;
+            liv.HMDCamera = camera;
+            liv.fixPostEffectsAlpha = true;
+            liv.spectatorLayerMask = camera.cullingMask;
+            liv.spectatorLayerMask &= ~(1 << LayerMask.NameToLayer("UI"));
+
+            ModHelper.Console.WriteLine($"LIV created successfully with stage {stage}");
+        }
+        
         private void SetUpLiv(Camera camera)
         {
             ModHelper.Console.WriteLine($"Setting up LIV with camera {camera.name}");
