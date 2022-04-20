@@ -123,7 +123,6 @@ namespace OwLiv
             {
                 "NomaiRemoteCamera",
                 "AudioListener",
-                "OWCamera",
                 "NomaiViewerImageEffect",
                 "FlashbackScreenGrabImageEffect",
                 "DebugHUD",
