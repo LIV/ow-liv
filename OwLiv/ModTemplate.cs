@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Reflection;
 using LIV.SDK.Unity;
 using OWML.Common;
 using OWML.ModHelper;
@@ -11,24 +12,54 @@ namespace OwLiv
     {
         private LIV.SDK.Unity.LIV liv;
         private AssetBundle shaderBundle;
+        private Camera previousCurrentCamera;
         
         private void Start()
         {
+            // Harmony.HarmonyInstance.Create("OwLivHarmony").PatchAll(Assembly.GetExecutingAssembly());
+            
             shaderBundle = LoadBundle("liv-shaders");
             SDKShaders.LoadFromAssetBundle(shaderBundle);
+            
+            GlobalMessenger<OWCamera>.AddListener("SwitchActiveCamera", OnSwitchActiveCamera);
+            SetUpLiv(Camera.main);
         }
-        
+
+        private void OnSwitchActiveCamera(OWCamera activeCamera)
+        {
+            ModHelper.Console.WriteLine($"Switch active camera to ${activeCamera}");
+            SetUpLiv(activeCamera.mainCamera);
+        }
+
         private void Update()
         {
-            if (OWInput.IsNewlyPressed(InputLibrary.map))
+            var currentCamera = Camera.main;
+
+            if (!currentCamera) return;
+
+            if (previousCurrentCamera != currentCamera)
             {
-                SetUpLiv();
+                previousCurrentCamera = currentCamera;
+                // SetUpLiv(Camera.main);
+            }
+            else
+            {
+                if (currentCamera.cullingMask != liv.spectatorLayerMask)
+                {
+                    liv.spectatorLayerMask = currentCamera.cullingMask;
+                    liv.spectatorLayerMask &= ~(1 << LayerMask.NameToLayer("UI"));
+                }
+            }
+            
+            if (OWInput.IsNewlyPressed(InputLibrary.rollMode))
+            {
+                SetUpLiv(Camera.main);
             }
         }
 
-        private void SetUpLiv()
+        private void SetUpLiv(Camera camera)
         {
-            ModHelper.Console.WriteLine($"Setting up LIV...");
+            ModHelper.Console.WriteLine($"Setting up LIV with camera {camera.name}");
             
             if (liv)
             {
@@ -36,7 +67,6 @@ namespace OwLiv
                 Destroy(liv);
             }
             
-            var camera = Locator.GetPlayerCamera()._mainCamera;
             var cameraParent = camera.transform.parent;
 
             var steamVrPose = cameraParent.GetComponentInChildren<SteamVR_Behaviour_Pose>();
@@ -49,6 +79,24 @@ namespace OwLiv
             liv.fixPostEffectsAlpha = true;
             liv.spectatorLayerMask = camera.cullingMask;
             liv.spectatorLayerMask &= ~(1 << LayerMask.NameToLayer("UI"));
+            liv.excludeBehaviours = new[]
+            {
+                "NomaiRemoteCamera",
+                "AudioListener",
+                "OWCamera",
+                "NomaiViewerImageEffect",
+                "FlashbackScreenGrabImageEffect",
+                "DebugHUD",
+                "PlayerCameraController",
+                "FirstPersonManipulator",
+                "MindProjectorImageEffect",
+                "RealityShatterImageEffect",
+                "StreamingController",
+                "VRMindProjectorImageEffect",
+                "VRCameraManipulator",
+                "ProximityDetector",
+                "ViveFoveatedRendering"
+            };
 
             ModHelper.Console.WriteLine($"LIV created successfully with stage {stage}");
         }
