@@ -22,7 +22,19 @@ namespace OwLiv
             SDKShaders.LoadFromAssetBundle(shaderBundle);
             
             GlobalMessenger<OWCamera>.AddListener("SwitchActiveCamera", OnSwitchActiveCamera);
+            LoadManager.OnCompleteSceneLoad += OnSceneLoaded;
             SetUpLiv(Camera.main);
+        }
+
+        private void OnSceneLoaded(OWScene originalscene, OWScene loadscene)
+        {
+            SetUpLiv(Camera.main);
+
+            var flashback = FindObjectOfType<Flashback>();
+            if (flashback)
+            {
+                flashback._maskEndDist = -2;
+            }
         }
 
         private void OnSwitchActiveCamera(OWCamera activeCamera)
@@ -32,6 +44,10 @@ namespace OwLiv
             if (activeCamera.GetComponent<NomaiRemoteCamera>())
             {
                 SetUpLivRemotNomaiCamera(activeCamera.mainCamera);
+            }
+            else if (activeCamera.GetComponent<Flashback>())
+            {
+                SetUpLivFlashback(activeCamera.mainCamera);
             }
             else
             {
@@ -59,9 +75,9 @@ namespace OwLiv
                 }
             }
             
-            if (OWInput.IsNewlyPressed(InputLibrary.rollMode))
+            if (Input.GetKeyDown(KeyCode.T))
             {
-                SetUpLiv(Camera.main);
+                Time.timeScale = Time.timeScale == 1 ?  0.01f : 1;
             }
         }
 
@@ -93,6 +109,55 @@ namespace OwLiv
             liv.fixPostEffectsAlpha = true;
             liv.spectatorLayerMask = camera.cullingMask;
             liv.spectatorLayerMask &= ~(1 << LayerMask.NameToLayer("UI"));
+
+            ModHelper.Console.WriteLine($"LIV created successfully with stage {stage}");
+        }
+        
+        private void SetUpLivFlashback(Camera camera)
+        {
+            ModHelper.Console.WriteLine($"Setting up LIV with camera {camera.name}");
+            
+            if (liv)
+            {
+                ModHelper.Console.WriteLine($"LIV instance already exists. Destroying it.");
+                Destroy(liv);
+            }
+            
+            var cameraParent = new GameObject("LivFlashbackCameraParent").transform;
+            cameraParent.SetParent(camera.transform.parent, false);
+            cameraParent.position = new Vector3(camera.transform.position.x, -camera.transform.localPosition.y, camera.transform.position.z);
+
+            var steamVrPose = cameraParent.GetComponentInChildren<SteamVR_Behaviour_Pose>();
+            
+            var stage = steamVrPose ? steamVrPose.transform.parent : cameraParent;
+
+            liv = cameraParent.gameObject.AddComponent<LIV.SDK.Unity.LIV>();
+            liv.stage = stage;
+            liv.HMDCamera = camera;
+            liv.fixPostEffectsAlpha = true;
+            liv.spectatorLayerMask = camera.cullingMask;
+            liv.spectatorLayerMask &= ~(1 << LayerMask.NameToLayer("UI"));
+            liv.excludeBehaviours = new[]
+            {
+                "NomaiRemoteCamera",
+                "AudioListener",
+                "NomaiViewerImageEffect",
+                "FlashbackScreenGrabImageEffect",
+                "DebugHUD",
+                "PlayerCameraController",
+                "FirstPersonManipulator",
+                "MindProjectorImageEffect",
+                "RealityShatterImageEffect",
+                "StreamingController",
+                "VRMindProjectorImageEffect",
+                "VRCameraManipulator",
+                "ProximityDetector",
+                "ViveFoveatedRendering",
+                "Flashback",
+                "FlashbackRecorder",
+                "GameOverController",
+                "LoadTimeTracker"
+            };
 
             ModHelper.Console.WriteLine($"LIV created successfully with stage {stage}");
         }
@@ -134,7 +199,11 @@ namespace OwLiv
                 "VRMindProjectorImageEffect",
                 "VRCameraManipulator",
                 "ProximityDetector",
-                "ViveFoveatedRendering"
+                "ViveFoveatedRendering",
+                "Flashback",
+                "FlashbackRecorder",
+                "GameOverController",
+                "LoadTimeTracker"
             };
 
             ModHelper.Console.WriteLine($"LIV created successfully with stage {stage}");
