@@ -23,7 +23,22 @@ namespace OwLiv
             
             GlobalMessenger<OWCamera>.AddListener("SwitchActiveCamera", OnSwitchActiveCamera);
             LoadManager.OnCompleteSceneLoad += OnSceneLoaded;
-            SetUpLiv(Camera.main);
+            
+            ModHelper.Events.Subscribe<PlayerCameraController>(Events.AfterStart);
+            ModHelper.Events.Event += HandleEvent;
+        }
+
+        private void HandleEvent(MonoBehaviour behaviour, Events events)
+        {
+            if (behaviour.GetType() == typeof(PlayerCameraController) && events == Events.AfterStart)
+            {
+                SetUpLiv(Locator.GetPlayerCamera()._mainCamera);
+            }
+        }
+
+        private void HandlePlayerAwake(PlayerBody playerBody)
+        {
+            SetUpLiv(Locator.GetPlayerCamera()._mainCamera);
         }
 
         private void OnSceneLoaded(OWScene originalscene, OWScene loadscene)
@@ -64,20 +79,17 @@ namespace OwLiv
             if (previousCurrentCamera != currentCamera)
             {
                 previousCurrentCamera = currentCamera;
-                // SetUpLiv(Camera.main);
-            }
-            else
-            {
-                if (currentCamera.cullingMask != liv.spectatorLayerMask)
-                {
-                    liv.spectatorLayerMask = currentCamera.cullingMask;
-                    liv.spectatorLayerMask &= ~(1 << LayerMask.NameToLayer("UI"));
-                }
+                SetUpLiv(currentCamera);
             }
             
-            if (Input.GetKeyDown(KeyCode.T))
+            if (currentCamera.cullingMask != liv.spectatorLayerMask)
             {
-                Time.timeScale = Time.timeScale == 1 ?  0.01f : 1;
+            }
+                liv.spectatorLayerMask = currentCamera.cullingMask;
+            
+            if (OWInput.IsNewlyPressed(InputLibrary.rollMode))
+            {
+                SetUpLiv(currentCamera);
             }
         }
 
@@ -108,7 +120,7 @@ namespace OwLiv
             liv.HMDCamera = camera;
             liv.fixPostEffectsAlpha = true;
             liv.spectatorLayerMask = camera.cullingMask;
-            liv.spectatorLayerMask &= ~(1 << LayerMask.NameToLayer("UI"));
+            // liv.spectatorLayerMask &= ~(1 << LayerMask.NameToLayer("UI"));
 
             ModHelper.Console.WriteLine($"LIV created successfully with stage {stage}");
         }
@@ -169,7 +181,7 @@ namespace OwLiv
             if (liv)
             {
                 ModHelper.Console.WriteLine($"LIV instance already exists. Destroying it.");
-                Destroy(liv);
+                Destroy(liv.gameObject);
             }
             
             var cameraParent = camera.transform.parent;
@@ -177,13 +189,16 @@ namespace OwLiv
             var steamVrPose = cameraParent.GetComponentInChildren<SteamVR_Behaviour_Pose>();
             
             var stage = steamVrPose ? steamVrPose.transform.parent : cameraParent;
+            
+            var livObject = new GameObject("LIV");
+            livObject.gameObject.SetActive(false);
+            livObject.transform.SetParent(cameraParent, false);
 
-            liv = cameraParent.gameObject.AddComponent<LIV.SDK.Unity.LIV>();
+            liv = livObject.AddComponent<LIV.SDK.Unity.LIV>();
             liv.stage = stage;
             liv.HMDCamera = camera;
             liv.fixPostEffectsAlpha = true;
             liv.spectatorLayerMask = camera.cullingMask;
-            liv.spectatorLayerMask &= ~(1 << LayerMask.NameToLayer("UI"));
             liv.excludeBehaviours = new[]
             {
                 "NomaiRemoteCamera",
@@ -203,10 +218,14 @@ namespace OwLiv
                 "Flashback",
                 "FlashbackRecorder",
                 "GameOverController",
-                "LoadTimeTracker"
+                "LoadTimeTracker",
+                "PostProcessingBehaviour"
             };
 
             ModHelper.Console.WriteLine($"LIV created successfully with stage {stage}");
+            
+            // TODO cleanup dont repeat
+            livObject.gameObject.SetActive(true);
         }
         
         private AssetBundle LoadBundle(string assetName)
