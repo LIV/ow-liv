@@ -12,6 +12,7 @@ namespace OwLiv
         private Camera cameraPrefab;
         private AssetBundle shaderBundle;
         private Camera previousCurrentCamera;
+        private const string flashbackCameraParentName = "LivFlashbackCameraParent";
         
         private void Start()
         {
@@ -37,24 +38,19 @@ namespace OwLiv
         {
             ModHelper.Console.WriteLine($"Switch active camera to ${activeCamera}");
 
+            var camera = activeCamera.mainCamera;
+            
             if (activeCamera.GetComponent<NomaiRemoteCamera>())
             {
-                if (!cameraPrefab)
-                {
-                    var livCameraPrefabParent = new GameObject("LIVCameraPrefabParent").transform;
-                    cameraPrefab = new GameObject("LivCameraPrefab").AddComponent<Camera>();
-                    cameraPrefab.transform.SetParent(livCameraPrefabParent, false);
-                    livCameraPrefabParent.gameObject.SetActive(false);
-                }
-                SetUpLiv(activeCamera.mainCamera, activeCamera.mainCamera.transform.parent.parent, true);
+                SetUpLivNomaiRemoteCamera(camera);
             }
             else if (activeCamera.GetComponent<Flashback>())
             {
-                SetUpLivFlashback(activeCamera.mainCamera);
+                SetUpLivFlashback(camera);
             }
             else
             {
-                SetUpLiv(activeCamera.mainCamera);
+                SetUpLiv(camera);
             }
         }
 
@@ -80,54 +76,30 @@ namespace OwLiv
                 SetUpLiv(currentCamera);
             }
         }
+
+        private void SetUpLivNomaiRemoteCamera(Camera camera)
+        {
+            if (!cameraPrefab)
+            {
+                var livCameraPrefabParent = new GameObject("LIVCameraPrefabParent").transform;
+                cameraPrefab = new GameObject("LivCameraPrefab").AddComponent<Camera>();
+                cameraPrefab.transform.SetParent(livCameraPrefabParent, false);
+                livCameraPrefabParent.gameObject.SetActive(false);
+            }
+            SetUpLiv(camera, camera.transform.parent.parent, true);
+        }
         
         private void SetUpLivFlashback(Camera camera)
         {
-            ModHelper.Console.WriteLine($"Setting up LIV with camera {camera.name}");
-            
-            if (liv)
+            var cameraParent = camera.transform.parent.Find(flashbackCameraParentName);
+            if (!cameraParent)
             {
-                ModHelper.Console.WriteLine($"LIV instance already exists. Destroying it.");
-                Destroy(liv);
+                cameraParent = new GameObject("LivFlashbackCameraParent").transform;
+                cameraParent.SetParent(camera.transform.parent, false);
+                cameraParent.position = new Vector3(camera.transform.position.x, -camera.transform.localPosition.y, camera.transform.position.z);
             }
-            
-            var cameraParent = new GameObject("LivFlashbackCameraParent").transform;
-            cameraParent.SetParent(camera.transform.parent, false);
-            cameraParent.position = new Vector3(camera.transform.position.x, -camera.transform.localPosition.y, camera.transform.position.z);
 
-            var steamVrPose = cameraParent.GetComponentInChildren<SteamVR_Behaviour_Pose>();
-            
-            var stage = steamVrPose ? steamVrPose.transform.parent : cameraParent;
-
-            liv = cameraParent.gameObject.AddComponent<LIV.SDK.Unity.LIV>();
-            liv.stage = stage;
-            liv.HMDCamera = camera;
-            liv.fixPostEffectsAlpha = true;
-            liv.spectatorLayerMask = camera.cullingMask;
-            liv.spectatorLayerMask &= ~(1 << LayerMask.NameToLayer("UI"));
-            liv.excludeBehaviours = new[]
-            {
-                "NomaiRemoteCamera",
-                "AudioListener",
-                "NomaiViewerImageEffect",
-                "FlashbackScreenGrabImageEffect",
-                "DebugHUD",
-                "PlayerCameraController",
-                "FirstPersonManipulator",
-                "MindProjectorImageEffect",
-                "RealityShatterImageEffect",
-                "StreamingController",
-                "VRMindProjectorImageEffect",
-                "VRCameraManipulator",
-                "ProximityDetector",
-                "ViveFoveatedRendering",
-                "Flashback",
-                "FlashbackRecorder",
-                "GameOverController",
-                "LoadTimeTracker"
-            };
-
-            ModHelper.Console.WriteLine($"LIV created successfully with stage {stage}");
+            SetUpLiv(camera, cameraParent);
         }
         
         private void SetUpLiv(Camera camera, Transform parent = null, bool usePrefab = false)
