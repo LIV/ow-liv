@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Reflection;
-using LIV.SDK.Unity;
+﻿using LIV.SDK.Unity;
 using OWML.Common;
 using OWML.ModHelper;
 using UnityEngine;
@@ -8,16 +6,14 @@ using Valve.VR;
 
 namespace OwLiv
 {
-    public class ModTemplate : ModBehaviour
+    public class OwLivMod : ModBehaviour
     {
-        private LIV.SDK.Unity.LIV liv;
+        public static LIV.SDK.Unity.LIV liv;
         private AssetBundle shaderBundle;
         private Camera previousCurrentCamera;
         
         private void Start()
         {
-            // Harmony.HarmonyInstance.Create("OwLivHarmony").PatchAll(Assembly.GetExecutingAssembly());
-            
             shaderBundle = LoadBundle("liv-shaders");
             SDKShaders.LoadFromAssetBundle(shaderBundle);
             
