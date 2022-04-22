@@ -14,12 +14,13 @@ The first time you start the game with the LIV mod installed, you need to start 
 
 ![image](https://user-images.githubusercontent.com/3955124/164718675-ee922841-41cc-4cd6-aef6-87b5e61f70ed.png)
 
-
 ### After first start
 
 After you started the game with LIV once and everything was working, you can start the game directly from LIV. The game should now show in the game seleciton dropdown, in the "Auto" tab.
 
 ![image](https://user-images.githubusercontent.com/3955124/164718470-a612f8c8-3225-441c-8b7c-6257091bfec1.png)
+
+If you're not using LIV, make sure to disable the LIV Support mod before starting the game, because this version of the mod may break some camera effects in the VR view.
 
 ### While playing
 
