@@ -5,5 +5,6 @@
   "uniqueName": "Raicuparta.OwLiv",
   "version": "0.1.0",
   "owmlVersion": "2.3.2",
-  "patcher": "OwLivPatcher.dll"
+  "patcher": "OwLivPatcher.dll",
+  "dependencies": [ "Raicuparta.NomaiVR" ]
 }
