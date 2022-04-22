@@ -30,10 +30,6 @@
       <Link>Assets\liv-shaders.manifest</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\OwLivUnity\Build\OwLivUnity_Data\Plugins\x86_64\LIV_Bridge.dll">
-      <Link>LIV_Bridge.dll</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="OwLiv.csproj.user" />
       <Content Include="Assets\**">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>

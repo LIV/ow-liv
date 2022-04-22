@@ -4,5 +4,6 @@
   "name": "Add LIV Support",
   "uniqueName": "Raicuparta.OwLiv",
   "version": "0.1.0",
-  "owmlVersion": "2.3.2"
+  "owmlVersion": "2.3.2",
+  "patcher": "OwLivPatcher.dll"
 }

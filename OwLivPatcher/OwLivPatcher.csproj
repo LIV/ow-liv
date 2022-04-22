@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net35</TargetFramework>
+    <ApplicationIcon />
+    <OutputType>WinExe</OutputType>
+    <StartupObject />
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <DebugType>none</DebugType>
+    
+    <!-- TODO: this results in a .dll.exe file, needs event to rename to .dll. -->
+    <AssemblyName>OwLivPatcher.dll</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="..\OwLivUnity\Build\OwLivUnity_Data\Plugins\x86_64\LIV_Bridge.dll">
+      <Link>files\OuterWilds_Data\Plugins\x86_64\LIV_Bridge.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OwLivPatcher.csproj.user" />
+  </ItemGroup>
+</Project>
