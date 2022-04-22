@@ -27,7 +27,7 @@ If something looks wrong, Hold "Thrust Up" and press the "Cancel" button to rese
 
 ### Performance
 
-[NomaiVR](https://outerwildsmods.com/mods/nomaivr/) by itself is already suuper heavy (due to Outer Wilds not being optimized for VR). Add LIV on top of that, and you get a nice slideshow. I recommend keeping LIV at 30 FPS and low resolution. Plus, reduce the SteamVR rendering resolution, and all graphics settings set to minimum. There's also a [Fixed Foveated Rendering](https://outerwildsmods.com/mods/nomaivrffr/) mod for RTX cards that can help a lot.
+[NomaiVR](https://outerwildsmods.com/mods/nomaivr/) by itself is already suuper heavy (due to Outer Wilds not being optimized for VR). Add LIV on top of that, and you get a nice slideshow. I recommend keeping LIV at 30 FPS and low resolution. Plus, reduce the SteamVR rendering resolution, and set all of the Outer Wilds graphics settings to minimum. There's also a [Fixed Foveated Rendering](https://outerwildsmods.com/mods/nomaivrffr/) mod for RTX cards that can help a lot.
 
 ### Known problems and reporting bugs
 
