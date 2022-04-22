@@ -8,7 +8,8 @@ namespace OwLiv
 {
     public class OwLivMod : ModBehaviour
     {
-        public static LIV.SDK.Unity.LIV liv;
+        private LIV.SDK.Unity.LIV liv;
+        private Camera cameraPrefab;
         private AssetBundle shaderBundle;
         private Camera previousCurrentCamera;
         
@@ -19,22 +20,6 @@ namespace OwLiv
             
             GlobalMessenger<OWCamera>.AddListener("SwitchActiveCamera", OnSwitchActiveCamera);
             LoadManager.OnCompleteSceneLoad += OnSceneLoaded;
-            
-            ModHelper.Events.Subscribe<PlayerCameraController>(Events.AfterStart);
-            ModHelper.Events.Event += HandleEvent;
-        }
-
-        private void HandleEvent(MonoBehaviour behaviour, Events events)
-        {
-            if (behaviour.GetType() == typeof(PlayerCameraController) && events == Events.AfterStart)
-            {
-                SetUpLiv(Locator.GetPlayerCamera()._mainCamera);
-            }
-        }
-
-        private void HandlePlayerAwake(PlayerBody playerBody)
-        {
-            SetUpLiv(Locator.GetPlayerCamera()._mainCamera);
         }
 
         private void OnSceneLoaded(OWScene originalscene, OWScene loadscene)
@@ -54,7 +39,14 @@ namespace OwLiv
 
             if (activeCamera.GetComponent<NomaiRemoteCamera>())
             {
-                SetUpLivRemotNomaiCamera(activeCamera.mainCamera);
+                if (!cameraPrefab)
+                {
+                    var livCameraPrefabParent = new GameObject("LIVCameraPrefabParent").transform;
+                    cameraPrefab = new GameObject("LivCameraPrefab").AddComponent<Camera>();
+                    cameraPrefab.transform.SetParent(livCameraPrefabParent, false);
+                    livCameraPrefabParent.gameObject.SetActive(false);
+                }
+                SetUpLiv(activeCamera.mainCamera, activeCamera.mainCamera.transform.parent.parent, true);
             }
             else if (activeCamera.GetComponent<Flashback>())
             {
@@ -80,45 +72,13 @@ namespace OwLiv
             
             if (currentCamera.cullingMask != liv.spectatorLayerMask)
             {
-            }
                 liv.spectatorLayerMask = currentCamera.cullingMask;
+            }
             
             if (OWInput.IsNewlyPressed(InputLibrary.rollMode))
             {
                 SetUpLiv(currentCamera);
             }
-        }
-
-        private void SetUpLivRemotNomaiCamera(Camera camera)
-        {
-            ModHelper.Console.WriteLine($"Setting up LIV with Remote NomaiCamera camera {camera.name}");
-            
-            if (liv)
-            {
-                ModHelper.Console.WriteLine($"LIV instance already exists. Destroying it.");
-                Destroy(liv);
-            }
-            
-            var cameraParent = camera.transform.parent.parent;
-
-            var steamVrPose = cameraParent.GetComponentInChildren<SteamVR_Behaviour_Pose>();
-            
-            var stage = steamVrPose ? steamVrPose.transform.parent : cameraParent;
-
-            var livCameraPrefabParent = new GameObject("LIVCameraPrefabParent").transform;
-            var livCameraPrefab = new GameObject("LivCameraPrefab").AddComponent<Camera>();
-            livCameraPrefab.transform.SetParent(livCameraPrefabParent, false);
-            livCameraPrefabParent.gameObject.SetActive(false);
-
-            liv = cameraParent.gameObject.AddComponent<LIV.SDK.Unity.LIV>();
-            liv.stage = stage;
-            liv.MRCameraPrefab = livCameraPrefab;
-            liv.HMDCamera = camera;
-            liv.fixPostEffectsAlpha = true;
-            liv.spectatorLayerMask = camera.cullingMask;
-            // liv.spectatorLayerMask &= ~(1 << LayerMask.NameToLayer("UI"));
-
-            ModHelper.Console.WriteLine($"LIV created successfully with stage {stage}");
         }
         
         private void SetUpLivFlashback(Camera camera)
@@ -170,7 +130,7 @@ namespace OwLiv
             ModHelper.Console.WriteLine($"LIV created successfully with stage {stage}");
         }
         
-        private void SetUpLiv(Camera camera)
+        private void SetUpLiv(Camera camera, Transform parent = null, bool usePrefab = false)
         {
             ModHelper.Console.WriteLine($"Setting up LIV with camera {camera.name}");
             
@@ -180,7 +140,7 @@ namespace OwLiv
                 Destroy(liv.gameObject);
             }
             
-            var cameraParent = camera.transform.parent;
+            var cameraParent = parent ? parent : camera.transform.parent;
 
             var steamVrPose = cameraParent.GetComponentInChildren<SteamVR_Behaviour_Pose>();
             
@@ -217,6 +177,10 @@ namespace OwLiv
                 "LoadTimeTracker",
                 "PostProcessingBehaviour"
             };
+            if (usePrefab)
+            {
+                liv.MRCameraPrefab = cameraPrefab;
+            }
 
             ModHelper.Console.WriteLine($"LIV created successfully with stage {stage}");
             
