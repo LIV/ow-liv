@@ -25,6 +25,10 @@ After you started the game with LIV once and everything was working, you can sta
 
 If something looks wrong, Hold "Thrust Up" and press the "Cancel" button to reset the LIV camera. Check the SteamVR input bindings if you wanna know what buttons are assigned to those actions.
 
+### Performance
+
+[NomaiVR](https://outerwildsmods.com/mods/nomaivr/) by itself is already suuper heavy (due to Outer Wilds not being optimized for VR). Add LIV on top of that, and you get a nice slideshow. I recommend keeping LIV at 30 FPS and low resolution. Plus, reduce the SteamVR rendering resolution, and all graphics settings set to minimum. There's also a [Fixed Foveated Rendering](https://outerwildsmods.com/mods/nomaivrffr/) mod for RTX cards that can help a lot.
+
 ### Known problems and reporting bugs
 
 Check the [issues list](https://github.com/Raicuparta/ow-liv/issues) for known bugs. Create a new issue if you run into problems.
