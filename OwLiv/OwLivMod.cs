@@ -156,7 +156,6 @@ namespace OwLiv
 
             ModHelper.Console.WriteLine($"LIV created successfully with stage {stage}");
             
-            // TODO cleanup dont repeat
             livObject.gameObject.SetActive(true);
         }
         
