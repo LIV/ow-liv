@@ -71,7 +71,7 @@ namespace OwLiv
                 liv.spectatorLayerMask = currentCamera.cullingMask;
             }
             
-            if (OWInput.IsPressed(InputLibrary.thrustUp) && OWInput.IsPressed(InputLibrary.cancel))
+            if (OWInput.IsPressed(InputLibrary.thrustUp) && OWInput.IsNewlyPressed(InputLibrary.cancel))
             {
                 SetUpLiv(currentCamera);
             }
