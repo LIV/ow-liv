@@ -6,6 +6,8 @@ Adds [LIV](https://store.steampowered.com/app/755540/LIV/) support to Outer Wild
 
 ## Instructions
 
+This isn't super straightforward so please read these instructions before using the mod.
+
 ### First start
 
 The first time you start the game with the LIV mod installed, you need to start via the Mod Manager "Start Game" button. In the "Manual" tab, select the Outer Wilds exe and check if everyrhing is working properly.
